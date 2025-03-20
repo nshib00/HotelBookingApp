@@ -7,19 +7,27 @@ namespace BookingApp.Domain.Entities
     public class Hotel
     {
         [Key]
-        [Column("id")]
         public int Id { get; set; }
 
-        [Column("name")]
         [Required]
         public string Name { get; set; }
 
-        [Column("services_id")]
+        public string Description { get; set; }
+
+        public string City { get; set; }
+
+        public string Address { get; set; }
+
+        [Range(0, 5)]
+        public double Rating { get; set; }
+
         public int ServicesId { get; set; }
 
-        [Column("image_id")]
-        public int ImageId { get; set; }
+        [Url]
+        public string ImageUrl { get; set; }
 
         public ICollection<Room> Rooms { get; set; } = new List<Room>();
+
+        public ICollection<HotelService> Services { get; set; } = new List<HotelService>();
     }
 }

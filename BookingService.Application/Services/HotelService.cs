@@ -1,27 +1,10 @@
 ﻿using BookingApp.Application.DTOs;
 using BookingApp.Domain.Entities;
 using BookingApp.Domain.Interfaces;
+using BookingApp.Application.Extensions;
 
 namespace BookingApp.Application.Services
 {
-    public static class HotelExtensions
-    {
-        public static HotelDTO ToDto(this Hotel hotel)
-        {
-            return new HotelDTO
-            {
-                Id = hotel.Id,
-                Name = hotel.Name,
-                Rooms = hotel.Rooms,
-            };
-        }
-
-        public static IEnumerable<HotelDTO> ToDtoList(this IEnumerable<Hotel> hotels)
-        {
-            return hotels.Select(h => h.ToDto());
-        }
-    }
-
     public class HotelService
     {
         private readonly IHotelRepository _hotelRepository;
@@ -49,6 +32,12 @@ namespace BookingApp.Application.Services
             {
                 Name = hotelDto.Name,
                 Rooms = hotelDto.Rooms,
+                Description = hotelDto.Description,
+                City = hotelDto.City,
+                Address = hotelDto.Address,
+                Rating = hotelDto.Rating,
+                Services = hotelDto.Services,
+                ImageUrl = hotelDto.ImageUrl
             };
 
             var newHotel = await _hotelRepository.AddHotelAsync(hotel);

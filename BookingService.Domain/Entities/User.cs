@@ -7,31 +7,27 @@ namespace BookingApp.Domain.Entities
     public class User
     {
         [Key]
-        [Column("id")]
         public int Id { get; set; }
 
-        [Column("email")]
-        [Required]
+        [Required(ErrorMessage = "Укажите Ваше имя.")]
+        [StringLength(30, MinimumLength = 2, ErrorMessage = "Имя должно содержать от {2} до {1} символов.")]
         public string FirstName { get; set; }
 
-        [Column("email")]
-        [Required]
+        [Required(ErrorMessage = "Укажите Вашу фамилию.")]
+        [StringLength(30, MinimumLength = 2, ErrorMessage = "Фамилия должна содержать от {2} до {1} символов.")]
         public string LastName { get; set; }
 
-        [Column("email")]
+        [Phone]
         public string PhoneNumber { get; set; }
 
-        [Column("email")]
         [Required]
         public DateOnly BirthDate { get; set; }
 
-        [Column("email")]
+        [EmailAddress]
         public string Email { get; set; }
 
-        [Column("is_admin")]
         public bool IsAdmin { get; set; }
 
-        [Column("hashed_password")]
         [Required]
         public string HashedPassword { get; set; }
 

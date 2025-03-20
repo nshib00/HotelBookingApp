@@ -1,83 +1,80 @@
-﻿using Microsoft.AspNetCore.Http;
+﻿using BookingApp.Application.DTOs;
+using BookingApp.Application.Services;
 using Microsoft.AspNetCore.Mvc;
 
 namespace BookingApp.Api.Controllers
 {
+    [Route("api/[controller]")]
+    [ApiController]
     public class BookingController : Controller
     {
-        // GET: BookingController
-        public ActionResult Index()
+        private readonly BookingService _bookingService;
+        private readonly UserService _userService;
+
+        public BookingController(BookingService bookingService, UserService userService)
         {
-            return View();
+            _bookingService = bookingService;
+            _userService = userService;
         }
 
-        // GET: BookingController/Details/5
-        public ActionResult Details(int id)
+        [HttpGet()]
+        public async Task<ActionResult<IEnumerable<BookingDTO>>> Get()
         {
-            return View();
+            //var user = await _userService.GetUserByIdAsync(userId);
+            //if (user == null)
+            //    return NotFound($"Пользователь с id={userId} не найден.");
+
+            //var bookings = await _bookingService.GetUserBookingsAsync(user);
+            return Ok();
         }
 
-        // GET: BookingController/Create
-        public ActionResult Create()
+        [HttpGet("{bookingId}")]
+        public async Task<ActionResult<BookingDTO>> Get(int bookingId)
         {
-            return View();
+            var booking = await _bookingService.GetBookingByIdAsync(bookingId);
+            return Ok(booking);
         }
 
-        // POST: BookingController/Create
         [HttpPost]
-        [ValidateAntiForgeryToken]
-        public ActionResult Create(IFormCollection collection)
+        public async Task<ActionResult> Post([FromBody] BookingDTO bookingDto)
         {
-            try
+            if (bookingDto == null)
             {
-                return RedirectToAction(nameof(Index));
+                return BadRequest("Некорректные данные о бронировании.");
             }
-            catch
-            {
-                return View();
-            }
+
+            var createdBooking = await _bookingService.AddBookingAsync(bookingDto);
+            return CreatedAtAction(nameof(Get), new { id = createdBooking.Id }, createdBooking);
         }
 
-        // GET: BookingController/Edit/5
-        public ActionResult Edit(int id)
+        [HttpPut("{id}")]
+        public async Task<ActionResult> Put(int id, [FromBody] BookingDTO bookingDto)
         {
-            return View();
+            if (bookingDto == null || id != bookingDto.Id)
+            {
+                return BadRequest("Некорректные данные о бронировании.");
+            }
+
+            var updatedBooking = await _bookingService.UpdateBookingAsync(bookingDto);
+            if (updatedBooking == null)
+            {
+                return NotFound($"Запись о бронировании с ID {id} не найдена.");
+            }
+
+            return Ok(updatedBooking);
         }
 
-        // POST: BookingController/Edit/5
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public ActionResult Edit(int id, IFormCollection collection)
+        [HttpDelete("{id}")]
+        public async Task<ActionResult> Delete(int id)
         {
-            try
+            var deleted = await _bookingService.DeleteBookingAsync(id);
+            if (!deleted)
             {
-                return RedirectToAction(nameof(Index));
+                return NotFound($"Запись о бронировании с ID {id} не найдена.");
             }
-            catch
-            {
-                return View();
-            }
+
+            return NoContent();
         }
 
-        // GET: BookingController/Delete/5
-        public ActionResult Delete(int id)
-        {
-            return View();
-        }
-
-        // POST: BookingController/Delete/5
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public ActionResult Delete(int id, IFormCollection collection)
-        {
-            try
-            {
-                return RedirectToAction(nameof(Index));
-            }
-            catch
-            {
-                return View();
-            }
-        }
     }
 }

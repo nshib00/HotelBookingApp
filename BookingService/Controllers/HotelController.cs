@@ -11,10 +11,12 @@ namespace BookingApp.Api.Controllers
     public class HotelController : ControllerBase
     {
         private readonly HotelService _hotelService;
+        private readonly RoomService _roomService;
 
-        public HotelController(HotelService hotelService)
+        public HotelController(HotelService hotelService, RoomService roomService)
         {
             _hotelService = hotelService;
+            _roomService = roomService;
         }
 
         [HttpGet]
@@ -28,8 +30,27 @@ namespace BookingApp.Api.Controllers
         public async Task<ActionResult<HotelDTO>> Get(int id)
         {
             var hotel = await _hotelService.GetHotelByIdAsync(id);
+            if (hotel == null)
+            {
+                return NotFound($"Отель с ID {id} не найден.");
+            }
             return Ok(hotel);
         }
+
+
+        [HttpGet("{id}/Rooms")]
+        public async Task<ActionResult<IEnumerable<HotelDTO>>> GetRooms(int id)
+        {
+            HotelDTO? hotel = await _hotelService.GetHotelByIdAsync(id);
+            if (hotel == null)
+            {
+                return NotFound($"Отель с ID {id} не найден.");
+            }
+
+            var hotelRooms = await _roomService.GetHotelRoomsAsync(hotel);
+            return Ok(hotelRooms);
+        }
+
 
         [HttpPost]
         public async Task<ActionResult> Post([FromBody] HotelDTO hotelDto)

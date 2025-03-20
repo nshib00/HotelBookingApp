@@ -7,22 +7,21 @@ namespace BookingApp.Domain.Entities
     public class Booking
     {
         [Key]
-        [Column("id")]
         public int Id { get; set; }
 
-        [Column("room_id")]
         public int RoomId { get; set; }
 
-        [Column("user_id")]
+        public Room Room { get; set; }
+
         public int UserId { get; set; }
 
-        [Column("date_from")]
+        [Required]
         public DateOnly DateFrom { get; set; }
 
-        [Column("date_to")]
+        [Required]
         public DateOnly DateTo { get; set; }
 
-        [Column("price")]
+        [Required]
         public double Price { get; set; }
 
         public User User { get; set; }
