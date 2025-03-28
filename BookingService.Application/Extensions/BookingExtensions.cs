@@ -14,7 +14,6 @@ namespace BookingApp.Application.Extensions
                 User = booking.User,
                 DateFrom = booking.DateFrom,
                 DateTo = booking.DateTo,
-                Price = booking.Price
             };
         }
 

@@ -15,7 +15,7 @@ namespace BookingApp.Application.Extensions
                 Description = hotel.Description,
                 City = hotel.City,
                 Address = hotel.Address,
-                Rating = hotel.Rating,
+                StarRating = hotel.StarRating,
                 Services = hotel.Services,
                 ImageUrl = hotel.ImageUrl
             };

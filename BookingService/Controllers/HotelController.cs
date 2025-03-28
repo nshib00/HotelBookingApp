@@ -1,5 +1,6 @@
 ﻿using BookingApp.Application.DTOs;
 using BookingApp.Application.Services;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 // For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
@@ -51,7 +52,7 @@ namespace BookingApp.Api.Controllers
             return Ok(hotelRooms);
         }
 
-
+        [Authorize(Roles = "admin")]
         [HttpPost]
         public async Task<ActionResult> Post([FromBody] HotelDTO hotelDto)
         {
@@ -64,6 +65,7 @@ namespace BookingApp.Api.Controllers
             return CreatedAtAction(nameof(Get), new { id = createdHotel.Id }, createdHotel);
         }
 
+        [Authorize(Roles = "admin")]
         [HttpPut("{id}")]
         public async Task<ActionResult> Put(int id, [FromBody] HotelDTO hotelDto)
         {
@@ -81,6 +83,7 @@ namespace BookingApp.Api.Controllers
             return Ok(updatedHotel);
         }
 
+        [Authorize(Roles = "admin")]
         [HttpDelete("{id}")]
         public async Task<ActionResult> Delete(int id)
         {

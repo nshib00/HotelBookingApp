@@ -15,8 +15,8 @@ namespace BookingApp.Application.DTOs
 
         public string Address { get; set; }
 
-        [Range(0, 5)]
-        public double Rating { get; set; }
+        [Range(1, 5)]
+        public int StarRating { get; set; }
 
         [Url]
         public string ImageUrl { get; set; }

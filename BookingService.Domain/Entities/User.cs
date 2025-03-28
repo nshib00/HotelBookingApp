@@ -1,14 +1,10 @@
 ﻿using System.ComponentModel.DataAnnotations;
-using System.ComponentModel.DataAnnotations.Schema;
+using Microsoft.AspNetCore.Identity;
 
 namespace BookingApp.Domain.Entities
 {
-    [Table("users")]
-    public class User
-    {
-        [Key]
-        public int Id { get; set; }
-
+    public class User : IdentityUser
+    {            
         [Required(ErrorMessage = "Укажите Ваше имя.")]
         [StringLength(30, MinimumLength = 2, ErrorMessage = "Имя должно содержать от {2} до {1} символов.")]
         public string FirstName { get; set; }
@@ -17,19 +13,8 @@ namespace BookingApp.Domain.Entities
         [StringLength(30, MinimumLength = 2, ErrorMessage = "Фамилия должна содержать от {2} до {1} символов.")]
         public string LastName { get; set; }
 
-        [Phone]
-        public string PhoneNumber { get; set; }
-
         [Required]
         public DateOnly BirthDate { get; set; }
-
-        [EmailAddress]
-        public string Email { get; set; }
-
-        public bool IsAdmin { get; set; }
-
-        [Required]
-        public string HashedPassword { get; set; }
 
         public ICollection<Booking> Bookings { get; set; } = new List<Booking>();
     }

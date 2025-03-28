@@ -34,7 +34,6 @@ namespace BookingApp.Application.Services
                 Room = bookingDto.Room,
                 DateFrom = bookingDto.DateFrom,
                 DateTo = bookingDto.DateTo,
-                Price = bookingDto.Price,
             };
 
             var newBooking = await _bookingRepository.CreateBookingAsync(booking);
@@ -50,7 +49,6 @@ namespace BookingApp.Application.Services
             existingBooking.Room = bookingDto.Room;
             existingBooking.DateFrom = bookingDto.DateFrom;
             existingBooking.DateTo = bookingDto.DateTo;
-            existingBooking.Price = bookingDto.Price;
 
             var updatedBooking = await _bookingRepository.UpdateBookingAsync(existingBooking);
             return updatedBooking.ToDto();

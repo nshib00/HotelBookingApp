@@ -1,5 +1,6 @@
 ﻿using BookingApp.Application.DTOs;
 using BookingApp.Application.Services;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace BookingApp.Api.Controllers
@@ -42,11 +43,16 @@ namespace BookingApp.Api.Controllers
             {
                 return BadRequest("Некорректные данные о бронировании.");
             }
+            if (bookingDto.DateFrom > bookingDto.DateTo)
+            {
+                return BadRequest("Начало проживания не может быть позже конца проживания.");
+            }
 
             var createdBooking = await _bookingService.AddBookingAsync(bookingDto);
             return CreatedAtAction(nameof(Get), new { id = createdBooking.Id }, createdBooking);
         }
 
+        [Authorize(Roles = "admin")]
         [HttpPut("{id}")]
         public async Task<ActionResult> Put(int id, [FromBody] BookingDTO bookingDto)
         {

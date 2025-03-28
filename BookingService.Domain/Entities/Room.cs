@@ -22,7 +22,7 @@ namespace BookingApp.Domain.Entities
         public int Quantity { get; set; }
 
         [Url]
-        public string ImageUrl { get; set; }
+        public string ImageUrl { get; set; } = "";
 
         public Hotel Hotel { get; set; }
 

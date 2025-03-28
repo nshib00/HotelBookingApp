@@ -4,7 +4,7 @@ using BookingApp.Domain.Interfaces;
 using BookingApp.Application.Extensions;
 
 namespace BookingApp.Application.Services
-{
+{ 
     public class UserService
     {
         private readonly IUserRepository _userRepository;
@@ -20,7 +20,7 @@ namespace BookingApp.Application.Services
             return users.ToDtoList();
         }
 
-        public async Task<UserDTOPublic?> GetUserByIdAsync(int id)
+        public async Task<UserDTOPublic?> GetUserByIdAsync(string id)
         {
             var user = await _userRepository.GetUserByIdAsync(id);
             return user?.ToDto();
@@ -35,9 +35,7 @@ namespace BookingApp.Application.Services
                 PhoneNumber = userDto.PhoneNumber,
                 BirthDate = userDto.BirthDate,
                 Email = userDto.Email,
-                IsAdmin = userDto.IsAdmin,
                 Bookings = userDto.Bookings,
-                HashedPassword = userDto.HashedPassword
             };
 
             var newUser = await _userRepository.AddUserAsync(user);
@@ -54,15 +52,13 @@ namespace BookingApp.Application.Services
             existingUser.PhoneNumber = userDto.PhoneNumber;
             existingUser.BirthDate = userDto.BirthDate;
             existingUser.Email = userDto.Email;
-            existingUser.IsAdmin = userDto.IsAdmin;
             existingUser.Bookings = userDto.Bookings;
-            existingUser.HashedPassword = userDto.HashedPassword;
 
             var updatedUser = await _userRepository.UpdateUserAsync(existingUser);
             return updatedUser.ToDto();
         }
 
-        public async Task<bool> DeleteUserAsync(int id)
+        public async Task<bool> DeleteUserAsync(string id)
         {
             var user = await _userRepository.GetUserByIdAsync(id);
             if (user == null) return false;

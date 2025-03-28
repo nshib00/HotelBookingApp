@@ -18,13 +18,13 @@ namespace BookingApp.Domain.Entities
 
         public string Address { get; set; }
 
-        [Range(0, 5)]
-        public double Rating { get; set; }
+        [Range(1, 5)]
+        public int StarRating { get; set; }
 
         public int ServicesId { get; set; }
 
         [Url]
-        public string ImageUrl { get; set; }
+        public string ImageUrl { get; set; } = "";
 
         public ICollection<Room> Rooms { get; set; } = new List<Room>();
 

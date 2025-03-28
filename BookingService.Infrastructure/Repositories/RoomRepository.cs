@@ -36,7 +36,7 @@ namespace BookingApp.Infrastructure.Repositories
 
         public async Task<Room?> GetRoomByIdAsync(int id)
         {
-            return await _context.Rooms.FindAsync(id);
+            return await _context.Rooms.Include(r => r.Services).FirstOrDefaultAsync(r => r.Id == id);
         }
 
         public async Task<Room> UpdateRoomAsync(Room room)

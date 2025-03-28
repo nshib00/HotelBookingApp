@@ -9,9 +9,9 @@ namespace BookingApp.Application.DTOs
 
         public User User { get; set; }
 
-        public DateOnly DateFrom { get; set; }
+        public DateTime DateFrom { get; set; }
 
-        public DateOnly DateTo { get; set; }
+        public DateTime DateTo { get; set; }
 
         public double Price { get; set; }
     }

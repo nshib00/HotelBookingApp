@@ -27,7 +27,7 @@ namespace BookingApp.Infrastructure.Repositories
             await _context.SaveChangesAsync();
         }
 
-        public async Task<IEnumerable<Booking>> GetAllUserBookingsAsync(int userId)
+        public async Task<IEnumerable<Booking>> GetAllUserBookingsAsync(string userId)
         {
             return await _context.Bookings
                 .Where(b => b.UserId == userId)

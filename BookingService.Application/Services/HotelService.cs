@@ -35,7 +35,7 @@ namespace BookingApp.Application.Services
                 Description = hotelDto.Description,
                 City = hotelDto.City,
                 Address = hotelDto.Address,
-                Rating = hotelDto.Rating,
+                StarRating = hotelDto.StarRating,
                 Services = hotelDto.Services,
                 ImageUrl = hotelDto.ImageUrl
             };

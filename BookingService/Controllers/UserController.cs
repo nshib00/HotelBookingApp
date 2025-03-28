@@ -1,5 +1,6 @@
 ﻿using BookingApp.Application.DTOs;
 using BookingApp.Application.Services;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 // For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
@@ -17,15 +18,16 @@ namespace BookingApp.Api.Controllers
             _userService = userService;
         }
 
+        [Authorize(Roles = "admin")]
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<UserDTO>>> Get()
+        public async Task<ActionResult<IEnumerable<UserDTO>>> GetAllUsers()
         {
             var users = await _userService.GetUsersAsync();
             return Ok(users);
         }
 
         [HttpGet("{id}")]
-        public async Task<ActionResult<UserDTO>> Get(int id)
+        public async Task<ActionResult<UserDTO>> GetUser(string id)
         {
             var user = await _userService.GetUserByIdAsync(id);
             if (user == null)
@@ -35,21 +37,9 @@ namespace BookingApp.Api.Controllers
             return Ok(user);
         }
 
-
-        [HttpPost]
-        public async Task<ActionResult> Post([FromBody] UserDTO userDto)
-        {
-            if (userDto == null)
-            {
-                return BadRequest("Некорректные данные.");
-            }
-
-            var createdUser = await _userService.AddUserAsync(userDto);
-            return CreatedAtAction(nameof(Get), new { id = createdUser.Id }, createdUser);
-        }
-
+        [Authorize(Roles = "admin")]
         [HttpPut("{id}")]
-        public async Task<ActionResult> Put(int id, [FromBody] UserDTO userDto)
+        public async Task<ActionResult> Put(string id, [FromBody] UserDTO userDto)
         {
             if (userDto == null || id != userDto.Id)
             {
@@ -65,8 +55,9 @@ namespace BookingApp.Api.Controllers
             return Ok(updatedUser);
         }
 
+        [Authorize(Roles = "admin")]
         [HttpDelete("{id}")]
-        public async Task<ActionResult> Delete(int id)
+        public async Task<ActionResult> Delete(string id)
         {
             var deleted = await _userService.DeleteUserAsync(id);
             if (!deleted)
