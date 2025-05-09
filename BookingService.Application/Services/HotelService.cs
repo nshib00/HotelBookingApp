@@ -41,6 +41,7 @@ namespace BookingApp.Application.Services
             };
 
             var newHotel = await _hotelRepository.AddHotelAsync(hotel);
+            hotelDto.Id = hotel.Id;
             return newHotel.ToDto();
         }
 

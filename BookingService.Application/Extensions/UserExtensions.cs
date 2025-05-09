@@ -15,7 +15,6 @@ namespace BookingApp.Application.Extensions
                 PhoneNumber = user.PhoneNumber,
                 BirthDate = user.BirthDate,
                 Email = user.Email,
-                Bookings = user.Bookings,
             }; 
         }
 

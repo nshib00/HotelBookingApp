@@ -43,11 +43,6 @@ namespace BookingApp.Infrastructure.DB
     {
         public void Configure(EntityTypeBuilder<Room> builder)
         {
-            builder.HasKey(r => r.Id);
-            builder.HasOne(r => r.Hotel)
-                .WithMany(h => h.Rooms)
-                .HasForeignKey(r => r.HotelId)
-                .OnDelete(DeleteBehavior.Cascade);
             builder.HasMany(r => r.Services)
                 .WithOne(s => s.Room)
                 .HasForeignKey(s => s.RoomId)
@@ -59,11 +54,11 @@ namespace BookingApp.Infrastructure.DB
     {
         public void Configure(EntityTypeBuilder<Booking> builder)
         {
-            builder.HasKey(b => b.Id);
-            builder.HasOne(b => b.User)
-                .WithMany(u => u.Bookings)
-                .HasForeignKey(b => b.UserId)
-                .OnDelete(DeleteBehavior.Cascade);
+            //builder.HasKey(b => b.Id);
+            //builder.HasOne(b => b.User)
+            //    .WithMany(u => u.Bookings)
+            //    .HasForeignKey(b => b.UserId)
+            //    .OnDelete(DeleteBehavior.Cascade);
         }
     }
 
@@ -72,10 +67,6 @@ namespace BookingApp.Infrastructure.DB
         public void Configure(EntityTypeBuilder<Hotel> builder)
         {
             builder.HasKey(h => h.Id);
-            builder.HasMany(h => h.Services)
-                .WithOne(s => s.Hotel)
-                .HasForeignKey(s => s.HotelId)
-                .OnDelete(DeleteBehavior.Cascade);
         }
     }
 

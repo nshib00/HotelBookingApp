@@ -2,12 +2,12 @@
 using BookingApp.Application.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using System.Security.Claims;
 
-// For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
 
 namespace BookingApp.Api.Controllers
 {
-    [Route("api/[controller]")]
+    [Route("api/users")]
     [ApiController]
     public class UserController : ControllerBase
     {
@@ -18,7 +18,6 @@ namespace BookingApp.Api.Controllers
             _userService = userService;
         }
 
-        [Authorize(Roles = "admin")]
         [HttpGet]
         public async Task<ActionResult<IEnumerable<UserDTO>>> GetAllUsers()
         {
@@ -26,8 +25,9 @@ namespace BookingApp.Api.Controllers
             return Ok(users);
         }
 
+        [Authorize(Roles = "admin")]
         [HttpGet("{id}")]
-        public async Task<ActionResult<UserDTO>> GetUser(string id)
+        public async Task<ActionResult<UserDTOPublic>> GetUser(string id)
         {
             var user = await _userService.GetUserByIdAsync(id);
             if (user == null)
@@ -62,10 +62,29 @@ namespace BookingApp.Api.Controllers
             var deleted = await _userService.DeleteUserAsync(id);
             if (!deleted)
             {
-                return NotFound($"Такой пользователь не найден.");
+                return NotFound("Такой пользователь не найден.");
             }
 
             return NoContent();
+        }
+
+        [Authorize]
+        [HttpGet("me")]
+        public async Task<ActionResult<UserDTOPublic>> GetCurrentUser()
+        {
+            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            if (string.IsNullOrEmpty(userId))
+            {
+                return Unauthorized("Не удалось определить текущего пользователя.");
+            }
+
+            var user = await _userService.GetUserByIdAsync(userId);
+            if (user == null)
+            {
+                return NotFound("Пользователь не найден.");
+            }
+
+            return Ok(user);
         }
     }
 }

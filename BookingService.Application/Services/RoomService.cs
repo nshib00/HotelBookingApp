@@ -31,7 +31,6 @@ namespace BookingApp.Application.Services
             var room = new Room
             {
                 Name = roomDto.Name,
-                Hotel = roomDto.Hotel,
                 Description = roomDto.Description,
                 Price = roomDto.Price,
                 Quantity = roomDto.Quantity,
@@ -49,7 +48,6 @@ namespace BookingApp.Application.Services
             if (existingRoom == null) return null;
 
             existingRoom.Name = roomDto.Name;
-            existingRoom.Hotel = roomDto.Hotel;
             existingRoom.Description = roomDto.Description;
             existingRoom.Price = roomDto.Price;
             existingRoom.Quantity = roomDto.Quantity;

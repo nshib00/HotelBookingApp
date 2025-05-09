@@ -34,7 +34,7 @@ namespace BookingApp.Infrastructure.Repositories
 
         public async Task<User?> GetUserByIdAsync(string id)
         {
-            return await _context.Users.Include(u => u.Bookings).FirstOrDefaultAsync(u => u.Id == id);
+            return await _context.Users.FirstOrDefaultAsync(u => u.Id == id);
         }
 
         public async Task<User> UpdateUserAsync(User user)

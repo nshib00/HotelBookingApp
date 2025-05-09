@@ -11,7 +11,6 @@ namespace BookingApp.Application.Extensions
             {
                 Id = room.Id,
                 Name = room.Name,
-                Hotel = room.Hotel,
                 Description = room.Description,
                 Price = room.Price,
                 Quantity = room.Quantity,

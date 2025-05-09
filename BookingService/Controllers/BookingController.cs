@@ -2,10 +2,11 @@
 using BookingApp.Application.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using System.Security.Claims;
 
 namespace BookingApp.Api.Controllers
 {
-    [Route("api/[controller]")]
+    [Route("api/bookings")]
     [ApiController]
     public class BookingController : Controller
     {
@@ -21,11 +22,15 @@ namespace BookingApp.Api.Controllers
         [HttpGet()]
         public async Task<ActionResult<IEnumerable<BookingDTO>>> Get()
         {
-            //var user = await _userService.GetUserByIdAsync(userId);
-            //if (user == null)
-            //    return NotFound($"Пользователь с id={userId} не найден.");
+            string? userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            if (userId == null)
+                return NotFound($"Пользователь с id={userId} не найден.");
 
-            //var bookings = await _bookingService.GetUserBookingsAsync(user);
+            var user = await _userService.GetUserByIdAsync(userId);
+            if (user == null)
+                return NotFound($"Пользователь с id={userId} не найден.");
+
+            var bookings = await _bookingService.GetUserBookingsAsync(user);
             return Ok();
         }
 

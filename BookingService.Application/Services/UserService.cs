@@ -35,7 +35,6 @@ namespace BookingApp.Application.Services
                 PhoneNumber = userDto.PhoneNumber,
                 BirthDate = userDto.BirthDate,
                 Email = userDto.Email,
-                Bookings = userDto.Bookings,
             };
 
             var newUser = await _userRepository.AddUserAsync(user);
@@ -52,7 +51,6 @@ namespace BookingApp.Application.Services
             existingUser.PhoneNumber = userDto.PhoneNumber;
             existingUser.BirthDate = userDto.BirthDate;
             existingUser.Email = userDto.Email;
-            existingUser.Bookings = userDto.Bookings;
 
             var updatedUser = await _userRepository.UpdateUserAsync(existingUser);
             return updatedUser.ToDto();

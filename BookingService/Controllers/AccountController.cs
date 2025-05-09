@@ -1,10 +1,12 @@
-﻿using BookingApp.Domain.Entities;
+﻿using BookingApp.Api.Models;
+using BookingApp.Api.Services;
+using BookingApp.Domain.Entities;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 
 namespace BookingApp.Api.Controllers
 {
-    [Route("api/[controller]")]
+    [Route("api/account")]
     [ApiController]
     public class AccountController : ControllerBase
     {
@@ -27,8 +29,8 @@ namespace BookingApp.Api.Controllers
 
             var user = new User
             {
-                UserName = model.UserName,
                 Email = model.Email,
+                UserName = model.UserName,
                 FirstName = model.FirstName,
                 LastName = model.LastName,
                 PhoneNumber = model.PhoneNumber
@@ -42,7 +44,6 @@ namespace BookingApp.Api.Controllers
                 return Ok("Регистрация прошла успешно!");
             }
 
-
             return BadRequest("Ошибка регистрации: " + string.Join(", ", result.Errors.Select(e => e.Description)) + ".");
         }
 
@@ -52,14 +53,33 @@ namespace BookingApp.Api.Controllers
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
 
-            var result = await _signInManager.PasswordSignInAsync(model.UserName, model.Password, model.RememberMe, false);
+            var user = await _userManager.FindByEmailAsync(model.Email);
 
-            if (result.Succeeded)
+            if (user == null)
             {
-                return Ok("Вход выполнен успешно!");
+                return Unauthorized("Пользователь не найден.");
             }
 
-            return Unauthorized("Неверное имя пользователя или пароль.");
+            if (user.UserName != null)
+            {
+                var result = await _signInManager.PasswordSignInAsync(user.UserName, model.Password, model.RememberMe, lockoutOnFailure: false);
+
+                if (result.Succeeded)
+                {
+                    var token = TokenManager.GenerateJwtToken(user, _userManager, _configuration);
+                    var roles = await _userManager.GetRolesAsync(user);
+                    var userRole = roles.FirstOrDefault() ?? "user";
+
+                    return Ok(new
+                    {
+                        token,
+                        email = user.Email,
+                        userRole
+                    });
+                }
+            }
+
+            return Unauthorized("Неверный email или пароль.");
         }
 
         [HttpPost("logout")]
@@ -68,22 +88,5 @@ namespace BookingApp.Api.Controllers
             await _signInManager.SignOutAsync();
             return Ok("Выход выполнен успешно.");
         }
-    }
-
-    public class RegisterModel
-    {
-        public string UserName { get; set; }
-        public string Email { get; set; }
-        public string FirstName { get; set; }
-        public string LastName { get; set; }
-        public string PhoneNumber { get; set; }
-        public string Password { get; set; }
-    }
-
-    public class LoginModel
-    {
-        public string UserName { get; set; }
-        public string Password { get; set; }
-        public bool RememberMe { get; set; }
     }
 }

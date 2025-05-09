@@ -24,8 +24,6 @@ namespace BookingApp.Domain.Entities
         [Url]
         public string ImageUrl { get; set; } = "";
 
-        public Hotel Hotel { get; set; }
-
         public ICollection<RoomService> Services { get; set; } = new List<RoomService>();
     }
 }
