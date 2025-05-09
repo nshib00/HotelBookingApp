@@ -11,18 +11,34 @@ using System.Text;
 
 var builder = WebApplication.CreateBuilder(args);
 
-// Add services to the container.
-
+// Добавляем контроллеры
 builder.Services.AddControllers();
-// Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
 
-builder.Services.AddDbContext<BookingDbContext>(options => 
+// Настройка DbContext
+builder.Services.AddDbContext<BookingDbContext>(options =>
     options.UseNpgsql(builder.Configuration.GetConnectionString("DefaultConnection")));
 
+// Добавляем Identity
 builder.Services.AddIdentity<User, IdentityRole>()
     .AddEntityFrameworkStores<BookingDbContext>()
     .AddDefaultTokenProviders();
 
+// Отключаем редиректы при неавторизованном доступе (401/403 вместо Redirect)
+builder.Services.ConfigureApplicationCookie(options =>
+{
+    options.Events.OnRedirectToLogin = context =>
+    {
+        context.Response.StatusCode = 401;
+        return Task.CompletedTask;
+    };
+    options.Events.OnRedirectToAccessDenied = context =>
+    {
+        context.Response.StatusCode = 403;
+        return Task.CompletedTask;
+    };
+});
+
+// Регистрация репозиториев и сервисов
 builder.Services.AddScoped<IBookingRepository, BookingRepository>();
 builder.Services.AddScoped<IHotelRepository, HotelRepository>();
 builder.Services.AddScoped<IRoomRepository, RoomRepository>();
@@ -33,41 +49,53 @@ builder.Services.AddScoped<BookingApp.Application.Services.HotelService>();
 builder.Services.AddScoped<BookingApp.Application.Services.RoomService>();
 builder.Services.AddScoped<UserService>();
 
+// Swagger / OpenAPI
 builder.Services.AddOpenApi();
 
-builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
-    .AddJwtBearer(options =>
+// Настройка JWT аутентификации
+builder.Services.AddAuthentication(options =>
+{
+    options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+    options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+})
+.AddJwtBearer(options =>
+{
+    options.TokenValidationParameters = new TokenValidationParameters
     {
-        options.TokenValidationParameters = new TokenValidationParameters
-        {
-            ValidateIssuer = true,
-            ValidateAudience = true,
-            ValidateLifetime = true,
-            ValidateIssuerSigningKey = true,
-            ValidIssuer = builder.Configuration["Jwt:Issuer"],
-            ValidAudience = builder.Configuration["Jwt:Audience"],
-            IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(builder.Configuration["SigningKey SigningKey SigningKey SigningKey SigningKey SigningKey SigningKey SigningKey "]))
-        };
-    });
+        ValidateIssuer = true,
+        ValidateAudience = true,
+        ValidateLifetime = true,
+        ValidateIssuerSigningKey = true,
+        ValidIssuer = builder.Configuration["Jwt:Issuer"],
+        ValidAudience = builder.Configuration["Jwt:Audience"],
+        IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(
+            builder.Configuration["Jwt:Key"] // <-- исправил на корректный ключ (а не твоя странная строка "SigningKey SigningKey ...")
+        ))
+    };
+});
 
+// Авторизация (политики)
 builder.Services.AddAuthorization(options =>
 {
     options.AddPolicy("RequireAdminRole", policy => policy.RequireRole("admin"));
 });
 
+// CORS политика
 var MyAllowSpecificOrigins = "_myAllowSpecificOrigins";
-
 builder.Services.AddCors(options =>
 {
-    options.AddPolicy(name: MyAllowSpecificOrigins,
-                      policy =>
-                      {
-                          policy.WithOrigins("http://localhost:3000");
-                      });
+    options.AddPolicy(name: MyAllowSpecificOrigins, policy =>
+    {
+        policy.WithOrigins("http://localhost:3000")
+              .AllowAnyHeader()
+              .AllowAnyMethod();
+    });
 });
 
+// Строим приложение
 var app = builder.Build();
 
+// Инициализация базы данных
 using (var scope = app.Services.CreateScope())
 {
     var services = scope.ServiceProvider;
@@ -77,6 +105,7 @@ using (var scope = app.Services.CreateScope())
     await DbInitializer.Initialize(context, userManager, roleManager);
 }
 
+// Обработка ошибок (401 при отсутствии авторизации)
 app.UseStatusCodePages(context =>
 {
     var response = context.HttpContext.Response;
@@ -90,14 +119,11 @@ app.UseStatusCodePages(context =>
     return Task.CompletedTask;
 });
 
-// Configure the HTTP request pipeline.
+// Swagger UI (в Dev)
 if (app.Environment.IsDevelopment())
 {
     app.MapOpenApi();
-
     app.UseDeveloperExceptionPage();
-    // Использование страницы разработки.
-
     app.UseSwaggerUI(c =>
     {
         c.SwaggerEndpoint("/openapi/v1.json", "Booking App API v1");
@@ -105,11 +131,12 @@ if (app.Environment.IsDevelopment())
     });
 }
 
-app.UseAuthorization();
+app.UseHttpsRedirection();
 
 app.UseCors(MyAllowSpecificOrigins);
 
-app.UseHttpsRedirection();
+app.UseAuthentication();
+app.UseAuthorization();
 
 app.MapControllers();
 
