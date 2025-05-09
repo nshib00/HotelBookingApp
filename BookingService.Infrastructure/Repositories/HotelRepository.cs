@@ -16,7 +16,7 @@ namespace BookingApp.Infrastructure.Repositories
 
         public async Task<IEnumerable<Hotel>> GetAllHotelsAsync()
         {
-            return await _context.Hotels.ToListAsync();
+            return await _context.Hotels.Include(h => h.Rooms).ToListAsync();
         }
 
         public async Task<Hotel?> GetHotelByIdAsync(int id)

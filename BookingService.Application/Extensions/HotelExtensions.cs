@@ -7,7 +7,7 @@ namespace BookingApp.Application.Extensions
     {
         public static HotelDTO ToDto(this Hotel hotel)
         {
-            return new HotelDTO
+            var dto = new HotelDTO
             {
                 Id = hotel.Id,
                 Name = hotel.Name,
@@ -19,8 +19,14 @@ namespace BookingApp.Application.Extensions
                 Services = hotel.Services,
                 ImageUrl = hotel.ImageUrl
             };
-        }
 
+            if (hotel.Rooms != null && hotel.Rooms.Any())
+            {
+                dto.MinRoomPrice = hotel.Rooms.Min(r => r.Price);
+            }
+
+            return dto;
+        }
         public static IEnumerable<HotelDTO> ToDtoList(this IEnumerable<Hotel> hotels)
         {
             return hotels.Select(h => h.ToDto());

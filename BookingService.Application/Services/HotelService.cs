@@ -17,13 +17,29 @@ namespace BookingApp.Application.Services
         public async Task<IEnumerable<HotelDTO>> GetHotelsAsync()
         {
             var hotels = await _hotelRepository.GetAllHotelsAsync();
-            return hotels.ToDtoList();
+            var hotelDtos = hotels.ToDtoList();
+
+            foreach (var dto in hotelDtos)
+            {
+                if (dto.Rooms != null && dto.Rooms.Any())
+                    dto.MinRoomPrice = dto.Rooms.Min(r => r.Price);
+            }
+
+            return hotelDtos;
         }
 
         public async Task<HotelDTO?> GetHotelByIdAsync(int id)
         {
             var hotel = await _hotelRepository.GetHotelByIdAsync(id);
-            return hotel?.ToDto();
+            var dto = hotel?.ToDto();
+
+            if (dto != null)
+            {
+                if (dto.Rooms.Any())
+                    dto.MinRoomPrice = dto.Rooms.Min(r => r.Price);
+            }
+
+            return dto;
         }
 
         public async Task<HotelDTO> AddHotelAsync(HotelDTO hotelDto)
@@ -41,8 +57,12 @@ namespace BookingApp.Application.Services
             };
 
             var newHotel = await _hotelRepository.AddHotelAsync(hotel);
-            hotelDto.Id = hotel.Id;
-            return newHotel.ToDto();
+            hotelDto.Id = newHotel.Id;
+
+            if (hotelDto.Rooms.Any())
+                hotelDto.MinRoomPrice = hotelDto.Rooms.Min(r => r.Price);
+
+            return hotelDto;
         }
 
         public async Task<HotelDTO?> UpdateHotelAsync(HotelDTO hotelDto)
@@ -52,9 +72,20 @@ namespace BookingApp.Application.Services
 
             existingHotel.Name = hotelDto.Name;
             existingHotel.Rooms = hotelDto.Rooms;
+            existingHotel.Description = hotelDto.Description;
+            existingHotel.City = hotelDto.City;
+            existingHotel.Address = hotelDto.Address;
+            existingHotel.StarRating = hotelDto.StarRating;
+            existingHotel.Services = hotelDto.Services;
+            existingHotel.ImageUrl = hotelDto.ImageUrl;
 
             var updatedHotel = await _hotelRepository.UpdateHotelAsync(existingHotel);
-            return updatedHotel.ToDto();
+            var updatedDto = updatedHotel.ToDto();
+
+            if (updatedDto.Rooms.Any())
+                updatedDto.MinRoomPrice = updatedDto.Rooms.Min(r => r.Price);
+
+            return updatedDto;
         }
 
         public async Task<bool> DeleteHotelAsync(int id)

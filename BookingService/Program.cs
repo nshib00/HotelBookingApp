@@ -11,19 +11,19 @@ using System.Text;
 
 var builder = WebApplication.CreateBuilder(args);
 
-// Добавляем контроллеры
+// Добавление контроллеров
 builder.Services.AddControllers();
 
 // Настройка DbContext
 builder.Services.AddDbContext<BookingDbContext>(options =>
     options.UseNpgsql(builder.Configuration.GetConnectionString("DefaultConnection")));
 
-// Добавляем Identity
+// Добавление Identity
 builder.Services.AddIdentity<User, IdentityRole>()
     .AddEntityFrameworkStores<BookingDbContext>()
     .AddDefaultTokenProviders();
 
-// Отключаем редиректы при неавторизованном доступе (401/403 вместо Redirect)
+// Отключение редиректы при неавторизованном доступе (401/403 вместо Redirect)
 builder.Services.ConfigureApplicationCookie(options =>
 {
     options.Events.OnRedirectToLogin = context =>
@@ -49,10 +49,8 @@ builder.Services.AddScoped<BookingApp.Application.Services.HotelService>();
 builder.Services.AddScoped<BookingApp.Application.Services.RoomService>();
 builder.Services.AddScoped<UserService>();
 
-// Swagger / OpenAPI
 builder.Services.AddOpenApi();
 
-// Настройка JWT аутентификации
 builder.Services.AddAuthentication(options =>
 {
     options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
@@ -69,7 +67,7 @@ builder.Services.AddAuthentication(options =>
         ValidIssuer = builder.Configuration["Jwt:Issuer"],
         ValidAudience = builder.Configuration["Jwt:Audience"],
         IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(
-            builder.Configuration["Jwt:Key"] // <-- исправил на корректный ключ (а не твоя странная строка "SigningKey SigningKey ...")
+            builder.Configuration["Jwt:Key"]
         ))
     };
 });
@@ -92,7 +90,6 @@ builder.Services.AddCors(options =>
     });
 });
 
-// Строим приложение
 var app = builder.Build();
 
 // Инициализация базы данных

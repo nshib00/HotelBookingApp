@@ -21,8 +21,10 @@ namespace BookingApp.Application.DTOs
         [Url]
         public string ImageUrl { get; set; }
 
-        public ICollection<Room> Rooms { get; set; }
+        public ICollection<Room> Rooms { get; set; } = new List<Room>();
 
         public ICollection<HotelService> Services { get; set; }
+
+        public double? MinRoomPrice { get; set; }
     }
 }
