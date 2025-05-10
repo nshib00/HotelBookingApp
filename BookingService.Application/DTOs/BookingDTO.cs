@@ -11,6 +11,7 @@
     {
         public int Id { get; set; }
         public string? UserId { get; set; }
-        public double Price { get; set; }
+        public int TotalDays { get; set; }
+        public double TotalCost { get; set; }
     }
 }

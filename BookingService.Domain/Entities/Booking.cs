@@ -1,5 +1,5 @@
-﻿using System.ComponentModel.DataAnnotations;
-using System.ComponentModel.DataAnnotations.Schema;
+﻿using System.ComponentModel.DataAnnotations.Schema;
+using System.ComponentModel.DataAnnotations;
 
 namespace BookingApp.Domain.Entities
 {
@@ -13,14 +13,18 @@ namespace BookingApp.Domain.Entities
 
         public Room Room { get; set; }
 
-        public string UserId { get; set; }
+        public string? UserId { get; set; }
 
-        [Required]
-        public DateTime DateFrom { get; set; }
+        public required DateTime DateFrom { get; set; }
 
-        [Required]
-        public DateTime DateTo { get; set; }
+        public required DateTime DateTo { get; set; }
 
         public User User { get; set; }
+
+        [NotMapped]
+        public int TotalDays => (DateTo - DateFrom).Days;
+
+        [NotMapped]
+        public double TotalCost => TotalDays * Room.Price;
     }
 }

@@ -8,10 +8,12 @@ namespace BookingApp.Application.Services
     public class BookingService
     {
         private readonly IBookingRepository _bookingRepository;
+        private readonly IRoomRepository _roomRepository;
 
-        public BookingService(IBookingRepository bookingRepository)
+        public BookingService(IBookingRepository bookingRepository, IRoomRepository roomRepository)
         {
             _bookingRepository = bookingRepository;
+            _roomRepository = roomRepository;
         }
 
         public async Task<IEnumerable<BookingDTO?>> GetUserBookingsAsync(UserDTOPublic userDto)
@@ -37,6 +39,7 @@ namespace BookingApp.Application.Services
             };
 
             var newBooking = await _bookingRepository.CreateBookingAsync(booking);
+            newBooking.Room = await _roomRepository.GetRoomByIdAsync(newBooking.RoomId);
             return newBooking.ToDto();
         }
 
