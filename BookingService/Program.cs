@@ -43,11 +43,13 @@ builder.Services.AddScoped<IBookingRepository, BookingRepository>();
 builder.Services.AddScoped<IHotelRepository, HotelRepository>();
 builder.Services.AddScoped<IRoomRepository, RoomRepository>();
 builder.Services.AddScoped<IUserRepository, UserRepository>();
+builder.Services.AddScoped<IReviewRepository, ReviewRepository>();
 
 builder.Services.AddScoped<BookingService>();
 builder.Services.AddScoped<BookingApp.Application.Services.HotelService>();
 builder.Services.AddScoped<BookingApp.Application.Services.RoomService>();
 builder.Services.AddScoped<UserService>();
+builder.Services.AddScoped<ReviewService>();
 
 builder.Services.AddOpenApi();
 
