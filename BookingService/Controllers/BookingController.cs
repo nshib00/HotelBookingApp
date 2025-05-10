@@ -41,8 +41,9 @@ namespace BookingApp.Api.Controllers
             return Ok(booking);
         }
 
+        [Authorize]
         [HttpPost]
-        public async Task<ActionResult> Post([FromBody] BookingDTO bookingDto)
+        public async Task<ActionResult> Post([FromBody] BookingCreateDTO bookingDto)
         {
             if (bookingDto == null)
             {
@@ -53,9 +54,26 @@ namespace BookingApp.Api.Controllers
                 return BadRequest("Начало проживания не может быть позже конца проживания.");
             }
 
-            var createdBooking = await _bookingService.AddBookingAsync(bookingDto);
+            string? userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            if (userId == null)
+                return Unauthorized("Пользователь не найден.");
+
+            var user = await _userService.GetUserByIdAsync(userId);
+            if (user == null)
+                return NotFound($"Пользователь с id={userId} не найден.");
+
+            var newBookingDto = new BookingDTO
+            {
+                RoomId = bookingDto.RoomId,
+                DateFrom = DateTime.SpecifyKind(bookingDto.DateFrom, DateTimeKind.Utc),
+                DateTo = DateTime.SpecifyKind(bookingDto.DateTo, DateTimeKind.Utc),
+                UserId = userId
+            };
+
+            var createdBooking = await _bookingService.AddBookingAsync(newBookingDto);
             return CreatedAtAction(nameof(Get), new { id = createdBooking.Id }, createdBooking);
         }
+
 
         [Authorize(Roles = "admin")]
         [HttpPut("{id}")]

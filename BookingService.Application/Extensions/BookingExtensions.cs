@@ -10,10 +10,10 @@ namespace BookingApp.Application.Extensions
             return new BookingDTO
             {
                 Id = booking.Id,
-                Room = booking.Room,
-                User = booking.User,
+                RoomId = booking.RoomId,
+                UserId = booking.UserId,
                 DateFrom = booking.DateFrom,
-                DateTo = booking.DateTo,
+                DateTo = booking.DateTo
             };
         }
 

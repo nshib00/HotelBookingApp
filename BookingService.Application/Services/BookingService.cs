@@ -30,8 +30,8 @@ namespace BookingApp.Application.Services
         {
             var booking = new Booking
             {
-                User = bookingDto.User,
-                Room = bookingDto.Room,
+                UserId = bookingDto.UserId,
+                RoomId = bookingDto.RoomId ,
                 DateFrom = bookingDto.DateFrom,
                 DateTo = bookingDto.DateTo,
             };
@@ -45,8 +45,8 @@ namespace BookingApp.Application.Services
             var existingBooking = await _bookingRepository.GetBookingByIdAsync(bookingDto.Id);
             if (existingBooking == null) return null;
 
-            existingBooking.User = bookingDto.User;
-            existingBooking.Room = bookingDto.Room;
+            existingBooking.UserId = bookingDto.UserId;
+            existingBooking.RoomId = bookingDto.RoomId;
             existingBooking.DateFrom = bookingDto.DateFrom;
             existingBooking.DateTo = bookingDto.DateTo;
 

@@ -1,18 +1,16 @@
-﻿using BookingApp.Domain.Entities;
-namespace BookingApp.Application.DTOs
+﻿namespace BookingApp.Application.DTOs
 {
-    public class BookingDTO
+    public class BookingCreateDTO
+    {
+        public int RoomId { get; set; }
+        public DateTime DateFrom { get; set; }
+        public DateTime DateTo { get; set; }
+    }
+
+    public class BookingDTO : BookingCreateDTO
     {
         public int Id { get; set; }
-
-        public Room Room { get; set; }
-
-        public User User { get; set; }
-
-        public DateTime DateFrom { get; set; }
-
-        public DateTime DateTo { get; set; }
-
+        public string? UserId { get; set; }
         public double Price { get; set; }
     }
 }
