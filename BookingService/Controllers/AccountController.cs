@@ -32,8 +32,7 @@ namespace BookingApp.Api.Controllers
                 Email = model.Email,
                 UserName = model.UserName,
                 FirstName = model.FirstName,
-                LastName = model.LastName,
-                PhoneNumber = model.PhoneNumber
+                LastName = model.LastName
             };
 
             var result = await _userManager.CreateAsync(user, model.Password);
