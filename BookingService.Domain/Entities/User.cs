@@ -13,6 +13,8 @@ namespace BookingApp.Domain.Entities
 
         [Required]
         public DateOnly BirthDate { get; set; }
+
+        public ICollection<Review> Reviews { get; set; } = new List<Review>();
     }
 }
 

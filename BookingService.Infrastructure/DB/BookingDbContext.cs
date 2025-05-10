@@ -14,6 +14,7 @@ namespace BookingApp.Infrastructure.DB
         public DbSet<Booking> Bookings { get; set; }
         public DbSet<RoomService> RoomServices { get; set; }
         public DbSet<HotelService> HotelServices { get; set; }
+        public DbSet<Review> Reviews { get; set; }
 
         public BookingDbContext(DbContextOptions<BookingDbContext> options) : base(options)
         {
@@ -25,6 +26,7 @@ namespace BookingApp.Infrastructure.DB
             modelBuilder.ApplyConfiguration(new BookingConfiguration());
             modelBuilder.ApplyConfiguration(new RoomConfiguration());
             modelBuilder.ApplyConfiguration(new HotelConfiguration());
+            modelBuilder.ApplyConfiguration(new ReviewConfiguration());
 
             base.OnModelCreating(modelBuilder);
         }
@@ -66,6 +68,22 @@ namespace BookingApp.Infrastructure.DB
         public void Configure(EntityTypeBuilder<Hotel> builder)
         {
             builder.HasKey(h => h.Id);
+        }
+    }
+
+    public class ReviewConfiguration : IEntityTypeConfiguration<Review>
+    {
+        public void Configure(EntityTypeBuilder<Review> builder)
+        {
+            builder.HasOne(r => r.Hotel)
+                .WithMany(h => h.Reviews)
+                .HasForeignKey(r => r.HotelId)
+                .OnDelete(DeleteBehavior.Cascade);
+
+            builder.HasOne(r => r.User)
+                .WithMany(u => u.Reviews)
+                .HasForeignKey(r => r.UserId)
+                .OnDelete(DeleteBehavior.Cascade);
         }
     }
 

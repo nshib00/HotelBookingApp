@@ -29,5 +29,7 @@ namespace BookingApp.Domain.Entities
         public ICollection<Room> Rooms { get; set; } = new List<Room>();
 
         public ICollection<HotelService> Services { get; set; } = new List<HotelService>();
+
+        public ICollection<Review> Reviews { get; set; } = new List<Review>();
     }
 }
