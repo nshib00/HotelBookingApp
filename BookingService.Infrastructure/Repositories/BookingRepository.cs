@@ -30,6 +30,7 @@ namespace BookingApp.Infrastructure.Repositories
         public async Task<IEnumerable<Booking>> GetAllUserBookingsAsync(string userId)
         {
             return await _context.Bookings
+                .Include(b => b.Room)
                 .Where(b => b.UserId == userId)
                 .ToListAsync();
         }

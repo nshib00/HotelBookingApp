@@ -19,7 +19,8 @@ namespace BookingApp.Api.Controllers
             _userService = userService;
         }
 
-        [HttpGet()]
+        [Authorize]
+        [HttpGet]
         public async Task<ActionResult<IEnumerable<BookingDTO>>> Get()
         {
             string? userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
@@ -31,9 +32,10 @@ namespace BookingApp.Api.Controllers
                 return NotFound($"Пользователь с id={userId} не найден.");
 
             var bookings = await _bookingService.GetUserBookingsAsync(user);
-            return Ok();
+            return Ok(bookings);
         }
 
+        [Authorize]
         [HttpGet("{bookingId}")]
         public async Task<ActionResult<BookingDTO>> Get(int bookingId)
         {
@@ -93,6 +95,7 @@ namespace BookingApp.Api.Controllers
             return Ok(updatedBooking);
         }
 
+        [Authorize]
         [HttpDelete("{id}")]
         public async Task<ActionResult> Delete(int id)
         {
