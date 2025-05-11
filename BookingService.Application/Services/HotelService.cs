@@ -65,19 +65,17 @@ namespace BookingApp.Application.Services
             return hotelDto;
         }
 
-        public async Task<HotelDTO?> UpdateHotelAsync(HotelDTO hotelDto)
+        public async Task<HotelDTO?> UpdateHotelAsync(HotelUpdateDTO hotelDto)
         {
             var existingHotel = await _hotelRepository.GetHotelByIdAsync(hotelDto.Id);
             if (existingHotel == null) return null;
 
             existingHotel.Name = hotelDto.Name;
-            existingHotel.Rooms = hotelDto.Rooms;
             existingHotel.Description = hotelDto.Description;
             existingHotel.City = hotelDto.City;
             existingHotel.Address = hotelDto.Address;
             existingHotel.StarRating = hotelDto.StarRating;
-            existingHotel.Services = hotelDto.Services;
-            existingHotel.ImageUrl = hotelDto.ImageUrl;
+            existingHotel.ImageUrl = hotelDto.ImageUrl ?? "";
 
             var updatedHotel = await _hotelRepository.UpdateHotelAsync(existingHotel);
             var updatedDto = updatedHotel.ToDto();

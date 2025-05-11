@@ -1,10 +1,11 @@
 ﻿using BookingApp.Domain.Entities;
 using System.ComponentModel.DataAnnotations.Schema;
 using System.ComponentModel.DataAnnotations;
+using Microsoft.AspNetCore.Http;
 
 namespace BookingApp.Application.DTOs
 {
-    public class HotelDTO
+    public class HotelUpdateDTO
     {
         public int Id { get; set; }
         public string Name { get; set; }
@@ -19,8 +20,11 @@ namespace BookingApp.Application.DTOs
         public int StarRating { get; set; }
 
         [Url]
-        public string ImageUrl { get; set; }
+        public string? ImageUrl { get; set; }
+    }
 
+    public class HotelDTO : HotelUpdateDTO
+    {
         public ICollection<Room> Rooms { get; set; } = new List<Room>();
 
         public ICollection<HotelService> Services { get; set; }

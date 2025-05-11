@@ -66,17 +66,17 @@ namespace BookingApp.Api.Controllers
 
         [Authorize(Roles = "admin")]
         [HttpPut("{id}")]
-        public async Task<ActionResult> Put(int id, [FromBody] HotelDTO hotelDto)
+        public async Task<ActionResult> Put(int id, [FromBody] HotelUpdateDTO hotelDto)
         {
             if (hotelDto == null || id != hotelDto.Id)
             {
-                return BadRequest("Некорректные данные.");
+                return BadRequest("Переданы некорректные данные.");
             }
 
             var updatedHotel = await _hotelService.UpdateHotelAsync(hotelDto);
             if (updatedHotel == null)
             {
-                return NotFound($"Отель с ID {id} не найден.");
+                return NotFound($"Отель с ID={id} не найден.");
             }
 
             return Ok(updatedHotel);
