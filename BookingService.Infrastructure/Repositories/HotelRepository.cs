@@ -43,5 +43,21 @@ namespace BookingApp.Infrastructure.Repositories
             _context.Hotels.Remove(hotel);
             await _context.SaveChangesAsync();
         }
+
+        public async Task<(IEnumerable<Hotel> Hotels, int TotalCount)> GetHotelsPagedAsync(int page, int pageSize)
+        {
+            var query = _context.Hotels
+                                .Include(h => h.Rooms)
+                                .Include(h => h.Services)
+                                .AsQueryable();
+
+            var totalCount = await query.CountAsync();
+
+            var hotels = await query.Skip((page - 1) * pageSize)
+                                     .Take(pageSize)
+                                     .ToListAsync();
+
+            return (hotels, totalCount);
+        }
     }
 }

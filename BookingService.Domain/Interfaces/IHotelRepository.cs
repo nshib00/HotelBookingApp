@@ -9,5 +9,6 @@ namespace BookingApp.Domain.Interfaces
         Task<Hotel> AddHotelAsync(Hotel hotel);
         Task<Hotel> UpdateHotelAsync(Hotel hotel);
         Task DeleteHotelAsync(Hotel hotel);
+        Task<(IEnumerable<Hotel> Hotels, int TotalCount)> GetHotelsPagedAsync(int page, int pageSize);
     }
 }

@@ -20,10 +20,10 @@ namespace BookingApp.Api.Controllers
         }
 
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<HotelDTO>>> Get()
+        public async Task<ActionResult<PagedResult<HotelDTO>>> Get([FromQuery] int page = 1, [FromQuery] int pageSize = 10)
         {
-            var hotels = await _hotelService.GetHotelsAsync();
-            return Ok(hotels);
+            var hotelsPaged = await _hotelService.GetHotelsPagedAsync(page, pageSize);
+            return Ok(hotelsPaged);
         }
 
         [HttpGet("{id}")]
@@ -89,7 +89,7 @@ namespace BookingApp.Api.Controllers
             var deleted = await _hotelService.DeleteHotelAsync(id);
             if (!deleted)
             {
-                return NotFound($"Отель с ID {id} не найден.");
+                return NotFound($"Отель с ID={id} не найден.");
             }
 
             return NoContent();

@@ -94,5 +94,25 @@ namespace BookingApp.Application.Services
             await _hotelRepository.DeleteHotelAsync(hotel);
             return true;
         }
+
+        public async Task<PagedResult<HotelDTO>> GetHotelsPagedAsync(int page, int pageSize)
+        {
+            var (hotels, totalCount) = await _hotelRepository.GetHotelsPagedAsync(page, pageSize);
+            var hotelDtos = hotels.ToDtoList();
+
+            foreach (var dto in hotelDtos)
+            {
+                if (dto.Rooms != null && dto.Rooms.Any())
+                    dto.MinRoomPrice = dto.Rooms.Min(r => r.Price);
+            }
+
+            return new PagedResult<HotelDTO>
+            {
+                Items = hotelDtos,
+                TotalCount = totalCount,
+                Page = page,
+                PageSize = pageSize
+            };
+        }
     }
 }
