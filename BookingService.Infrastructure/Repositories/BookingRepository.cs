@@ -31,13 +31,17 @@ namespace BookingApp.Infrastructure.Repositories
         {
             return await _context.Bookings
                 .Include(b => b.Room)
+                .Include(b => b.Hotel)
                 .Where(b => b.UserId == userId)
                 .ToListAsync();
         }
 
         public async Task<Booking?> GetBookingByIdAsync(int id)
         {
-            return await _context.Bookings.FindAsync(id);
+            return await _context.Bookings
+                .Include(b => b.Room)
+                .Include(b => b.Hotel)
+                .FirstOrDefaultAsync(b => b.Id == id);
         }
 
         public async Task<Booking> UpdateBookingAsync(Booking booking)

@@ -13,6 +13,10 @@ namespace BookingApp.Domain.Entities
 
         public Room Room { get; set; }
 
+        public int? HotelId { get; set; }
+
+        public Hotel Hotel { get; set; }
+
         public string? UserId { get; set; }
 
         public required DateTime DateFrom { get; set; }

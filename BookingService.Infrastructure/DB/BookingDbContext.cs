@@ -60,6 +60,10 @@ namespace BookingApp.Infrastructure.DB
                .WithMany()
                .HasForeignKey(b => b.RoomId)
                .OnDelete(DeleteBehavior.Restrict);
+            builder.HasOne(b => b.Hotel)
+               .WithMany()
+               .HasForeignKey(b => b.HotelId)
+               .OnDelete(DeleteBehavior.Restrict);
         }
     }
 
