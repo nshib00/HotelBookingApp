@@ -15,7 +15,10 @@ namespace BookingApp.Application.Extensions
                 DateFrom = booking.DateFrom,
                 DateTo = booking.DateTo,
                 TotalDays = booking.TotalDays,
-                TotalCost = booking.TotalCost
+                TotalCost = booking.TotalCost,
+                Room = booking.Room.ToDto(),
+                Hotel = booking.Hotel?.ToDto(),
+                HotelId = booking.HotelId
             };
         }
 

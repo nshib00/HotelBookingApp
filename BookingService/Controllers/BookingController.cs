@@ -34,8 +34,7 @@ namespace BookingApp.Api.Controllers
             var bookings = await _bookingService.GetUserBookingsAsync(user);
             return Ok(bookings);
         }
-
-        [Authorize]
+        
         [HttpGet("{bookingId}")]
         public async Task<ActionResult<BookingDTO>> Get(int bookingId)
         {
@@ -95,7 +94,6 @@ namespace BookingApp.Api.Controllers
             return Ok(updatedBooking);
         }
 
-        [Authorize]
         [HttpDelete("{id}")]
         public async Task<ActionResult> Delete(int id)
         {

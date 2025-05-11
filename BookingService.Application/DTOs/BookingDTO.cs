@@ -13,5 +13,8 @@
         public string? UserId { get; set; }
         public int TotalDays { get; set; }
         public double TotalCost { get; set; }
+        public RoomDTO? Room { get; set; }
+        public HotelDTO? Hotel { get; set; }
+        public int? HotelId { get; set; }
     }
 }

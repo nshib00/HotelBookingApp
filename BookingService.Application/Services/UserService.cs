@@ -32,7 +32,6 @@ namespace BookingApp.Application.Services
             {
                 FirstName = userDto.FirstName,
                 LastName = userDto.LastName,
-                PhoneNumber = userDto.PhoneNumber,
                 BirthDate = userDto.BirthDate,
                 Email = userDto.Email,
             };
@@ -41,14 +40,13 @@ namespace BookingApp.Application.Services
             return newUser.ToDto();
         }
 
-        public async Task<UserDTO?> UpdateUserAsync(UserDTO userDto)
+        public async Task<UserDTO?> UpdateUserAsync(UserUpdateDTO userDto)
         {
             var existingUser = await _userRepository.GetUserByIdAsync(userDto.Id);
             if (existingUser == null) return null;
 
             existingUser.FirstName = userDto.FirstName;
             existingUser.LastName = userDto.LastName;
-            existingUser.PhoneNumber = userDto.PhoneNumber;
             existingUser.BirthDate = userDto.BirthDate;
             existingUser.Email = userDto.Email;
 

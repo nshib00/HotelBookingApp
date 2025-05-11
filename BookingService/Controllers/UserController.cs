@@ -39,7 +39,7 @@ namespace BookingApp.Api.Controllers
 
         [Authorize(Roles = "admin")]
         [HttpPut("{id}")]
-        public async Task<ActionResult> Put(string id, [FromBody] UserDTO userDto)
+        public async Task<ActionResult> Put(string id, [FromBody] UserUpdateDTO userDto)
         {
             if (userDto == null || id != userDto.Id)
             {

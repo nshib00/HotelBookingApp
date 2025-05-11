@@ -12,7 +12,6 @@ namespace BookingApp.Application.Extensions
                 Id = user.Id,
                 FirstName = user.FirstName,
                 LastName = user.LastName,
-                PhoneNumber = user.PhoneNumber,
                 BirthDate = user.BirthDate,
                 Email = user.Email,
             }; 
