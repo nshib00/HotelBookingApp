@@ -3,6 +3,8 @@ using BookingApp.Api.Services;
 using BookingApp.Domain.Entities;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Logging;
+using Serilog.Core;
 
 namespace BookingApp.Api.Controllers
 {
@@ -13,12 +15,15 @@ namespace BookingApp.Api.Controllers
         private readonly UserManager<User> _userManager;
         private readonly SignInManager<User> _signInManager;
         private readonly IConfiguration _configuration;
+        private readonly ILogger<AccountController> _logger;
 
-        public AccountController(UserManager<User> userManager, SignInManager<User> signInManager, IConfiguration configuration)
+        public AccountController(UserManager<User> userManager, SignInManager<User> signInManager, IConfiguration configuration,
+            ILogger<AccountController> logger)
         {
             _userManager = userManager;
             _signInManager = signInManager;
             _configuration = configuration;
+            _logger = logger;
         }
 
         [HttpPost("register")]
@@ -40,9 +45,11 @@ namespace BookingApp.Api.Controllers
             if (result.Succeeded)
             {
                 await _userManager.AddToRoleAsync(user, "user");
+                _logger.LogInformation("Пользователь {Email} успешно зарегистрирован.", user.Email);
                 return Ok("Регистрация прошла успешно!");
             }
 
+            _logger.LogWarning("Ошибка регистрации пользователя {Email}: {Errors}", user.Email, string.Join(", ", result.Errors.Select(e => e.Description)));
             return BadRequest("Ошибка регистрации: " + string.Join(", ", result.Errors.Select(e => e.Description)) + ".");
         }
 
@@ -56,6 +63,7 @@ namespace BookingApp.Api.Controllers
 
             if (user == null)
             {
+                _logger.LogWarning("Попытка входа с несуществующим email: {Email}", model.Email);
                 return Unauthorized("Пользователь не найден.");
             }
 
@@ -69,6 +77,7 @@ namespace BookingApp.Api.Controllers
                     var roles = await _userManager.GetRolesAsync(user);
                     var userRole = roles.FirstOrDefault() ?? "user";
 
+                    _logger.LogInformation("Пользователь {Email} успешно вошел в систему.", user.Email);
                     return Ok(new
                     {
                         token,
@@ -78,6 +87,7 @@ namespace BookingApp.Api.Controllers
                 }
             }
 
+            _logger.LogWarning("Неудачная попытка входа для email: {Email}", model.Email);
             return Unauthorized("Неверный email или пароль.");
         }
 
@@ -85,6 +95,7 @@ namespace BookingApp.Api.Controllers
         public async Task<IActionResult> Logout()
         {
             await _signInManager.SignOutAsync();
+            _logger.LogInformation("Пользователь вышел из системы.");
             return Ok("Выход выполнен успешно.");
         }
     }

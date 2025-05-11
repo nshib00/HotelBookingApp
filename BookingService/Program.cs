@@ -8,8 +8,18 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using System.Text;
+using Serilog;
 
 var builder = WebApplication.CreateBuilder(args);
+
+// Настройка Serilog
+Log.Logger = new LoggerConfiguration()
+    .WriteTo.Console()
+    .WriteTo.File("Logs/app.log", rollingInterval: RollingInterval.Day) // Логирование в файл (с ежедневным обновлением файла)
+    .CreateLogger();
+
+// Применение Serilog в приложении
+builder.Host.UseSerilog();
 
 // Добавление контроллеров
 builder.Services.AddControllers();

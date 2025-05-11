@@ -2,97 +2,93 @@
 using BookingApp.Application.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using System.Security.Claims;
+using Microsoft.Extensions.Logging;
 
 namespace BookingApp.Api.Controllers
 {
     [Route("api/reviews")]
     [ApiController]
-    public class ReviewController : Controller
+    public class ReviewController : ControllerBase
     {
         private readonly ReviewService _reviewService;
-        private readonly UserService _userService;
+        private readonly ILogger<ReviewController> _logger;
 
-        public ReviewController(ReviewService reviewService, UserService userService)
+        public ReviewController(ReviewService reviewService, ILogger<ReviewController> logger)
         {
             _reviewService = reviewService;
-            _userService = userService;
+            _logger = logger;
         }
 
-        [HttpGet("hotel/{hotelId}")]
-        public async Task<ActionResult<IEnumerable<ReviewDTO>>> GetHotelReviews(int hotelId)
+        [HttpGet]
+        public async Task<ActionResult<IEnumerable<ReviewDTO>>> Get(string userId)
         {
-            var reviews = await _reviewService.GetHotelReviewsAsync(hotelId);
-            return Ok(reviews);
-        }
-
-        [Authorize]
-        [HttpGet("my")]
-        public async Task<ActionResult<IEnumerable<ReviewDTO>>> GetMyReviews()
-        {
-            string? userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
-            if (userId == null)
-                return Unauthorized("Пользователь не найден.");
-
             var reviews = await _reviewService.GetUserReviewsAsync(userId);
+            _logger.LogInformation("Получен список всех отзывов пользователя id={userId}.", userId);
             return Ok(reviews);
         }
 
-        [HttpGet("{reviewId}")]
-        public async Task<ActionResult<ReviewDTO>> Get(int reviewId)
+        [HttpGet("{id}")]
+        public async Task<ActionResult<ReviewDTO>> Get(int id)
         {
-            var review = await _reviewService.GetReviewByIdAsync(reviewId);
+            var review = await _reviewService.GetReviewByIdAsync(id);
             if (review == null)
-                return NotFound();
+            {
+                _logger.LogWarning("Отзыв с id {Id} не найден.", id);
+                return NotFound($"Отзыв с id={id} не найден.");
+            }
 
+            _logger.LogInformation("Получен отзыв с id {Id}.", id);
             return Ok(review);
         }
 
         [Authorize]
         [HttpPost]
-        public async Task<ActionResult> Post([FromBody] ReviewCreateDTO reviewDto)
+        public async Task<ActionResult> Post([FromBody] ReviewDTO reviewDto)
         {
-            if (reviewDto == null || reviewDto.Rating < 1 || reviewDto.Rating > 5)
-                return BadRequest("Некорректные данные отзыва.");
-
-            string? userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
-            if (userId == null)
-                return Unauthorized("Пользователь не найден.");
-
-            var newReviewDto = new ReviewDTO
+            if (reviewDto == null)
             {
-                Rating = reviewDto.Rating,
-                Comment = reviewDto.Comment,
-                HotelId = reviewDto.HotelId,
-                UserId = userId
-            };
+                _logger.LogWarning("Попытка создать отзыв с некорректными данными.");
+                return BadRequest("Некорректные данные об отзыве.");
+            }
 
-            var createdReview = await _reviewService.AddReviewAsync(newReviewDto);
-            return CreatedAtAction(nameof(Get), new { reviewId = createdReview.Id }, createdReview);
+            var createdReview = await _reviewService.AddReviewAsync(reviewDto);
+            _logger.LogInformation("Создан отзыв с id {Id}.", createdReview.Id);
+            return CreatedAtAction(nameof(Get), new { id = createdReview.Id }, createdReview);
         }
 
-        [Authorize]
+        [Authorize(Roles = "admin")]
         [HttpPut("{id}")]
         public async Task<ActionResult> Put(int id, [FromBody] ReviewDTO reviewDto)
         {
             if (reviewDto == null || id != reviewDto.Id)
-                return BadRequest("Некорректные данные отзыва.");
+            {
+                _logger.LogWarning("Некорректные данные при обновлении отзыва id {Id}.", id);
+                return BadRequest("Некорректные данные об отзыве.");
+            }
 
             var updatedReview = await _reviewService.UpdateReviewAsync(reviewDto);
             if (updatedReview == null)
-                return NotFound();
+            {
+                _logger.LogWarning("Отзыв с id {Id} не найден для обновления.", id);
+                return NotFound($"Отзыв с id={id} не найден.");
+            }
 
+            _logger.LogInformation("Обновлен отзыв с id {Id}.", id);
             return Ok(updatedReview);
         }
 
-        [Authorize]
+        [Authorize(Roles = "admin")]
         [HttpDelete("{id}")]
         public async Task<ActionResult> Delete(int id)
         {
             var deleted = await _reviewService.DeleteReviewAsync(id);
             if (!deleted)
-                return NotFound();
+            {
+                _logger.LogWarning("Не удалось удалить отзыв с id {Id}. Не найден.", id);
+                return NotFound($"Отзыв с id={id} не найден.");
+            }
 
+            _logger.LogInformation("Удален отзыв с id {Id}.", id);
             return NoContent();
         }
     }
